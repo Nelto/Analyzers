@@ -44,14 +44,15 @@ namespace Analyzers
             return res;
         }
 
+        public List<string> GetTN()
+        {
+            return tn;
+        }
+
         private void Format(ref string program)
         {
-
-            for (int i = 0; i < tw.Length; i++)
-            {
-                
-                program = Regex.Replace(program, @"^" + tw[i] + "$", " $&");
-            }
+          program = Regex.Replace(program, @"^(end_else|loop|end)$", " $&");
+            
             for (int i = 0; i < 8; i++)
             {
 
