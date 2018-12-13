@@ -11,7 +11,7 @@ namespace Analyzers
     class LexicalAnalyz
     {
         private string[] tw = { "int", "floor", "bool", "let", "if", "then", "else", "end_else", "for", "do", "while", "loop", "input", "output", "end" };
-        private string[] tl = { ":", ",", "{", "}", "(", ")", ";", "=", "NE", "EQ", "LT", "LE", "GT", "GE", "plus", "min", "or", "mult", "div", "and", "~","%", " " };
+        private string[] tl = { ":", ",", "{", "}", "(", ")", ";", "=", "NE", "EQ", "LT", "LE", "GT", "GE", "plus", "min", "or", "mult", "div", "and", "~", " " };
         private List<string> ti = new List<string>();
         private List<string> tn = new List<string>();
         private List<string> res = new List<string>();
@@ -19,24 +19,33 @@ namespace Analyzers
         public LexicalAnalyz(string program)
         {
             Format(ref program);
-            Console.WriteLine(program);
             bool iscomment = false;
             string[] row = program.Split('\n');
             for (int i = 0; i < row.Length; i++)
             {
-                foreach (string lex in row[i].Trim().Split(' '))
+                if (row[i].Length == 0) continue;
+                string[] lexemes = row[i].Trim().Split(' ');
+                for (int j= 0;j<lexemes.Length;j++ )
                 {
-                    if (lex == "%")
+                    if (lexemes[j] == "(" && j < lexemes.Length - 1 && lexemes[j+1] =="*")
                     {
-                        iscomment = !iscomment;
+                        iscomment = true;
+                        j++;
+                        continue;
+                    }
+                    if (lexemes[j] == "*" && j <lexemes.Length-1 && lexemes[j + 1] == ")")
+                    {
+                        iscomment = false;
+                        j++;
                         continue;
                     }
                     if (!iscomment)
                     {
-                        Lex_Analyzer(lex);
+                        Lex_Analyzer(lexemes[j]);
                     }
                 }
             }
+            if (iscomment) throw new Exception("А комментарий за вас Пушкин закрывать будет?");
         }
 
         public List<string> GetRes()
@@ -64,11 +73,12 @@ namespace Analyzers
                 program = Regex.Replace(program, @"^" + tl[i] + "$", " $&");
             }
 
-            for (int i = 19; i < 22; i++)
+            for (int i = 19; i < 21; i++)
             {
 
                 program = program.Replace(tl[i], " " + tl[i] + " ");
             }
+            program = program.Replace("*", " * ");
 
             while (program.Contains("  "))
                 program = program.Replace("  ", " ");
