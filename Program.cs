@@ -10,14 +10,32 @@ namespace Analyzers
     {
         static void Main(string[] args)
         {
-            LexicalAnalyz analyzer = new LexicalAnalyz(
-                "{\n" +
-                "int k = 5\n" +
-                "for ( int i = 0 ; i LT 5 ; i + 1 ) k - 1 ;\n" +
-                "output ( k ) ;\n" +
-                "}"
-                );
-            analyzer.Print();
+            try
+            {
+                LexicalAnalyz analyzer = new LexicalAnalyz(
+                    "%это тест%\n"+
+                    "int k:\n" +
+                    "int s:\n" +
+                    "int a:\n" +
+                    "k = 5: a = 0: s = 1:\n" +
+                    "if k LT 1 then {\n" +
+                    "do while k NE s\n" +
+                    "a = a plus 2;\n" +
+                    "loop\n" +
+                    "}\n" +
+                    "end_else " +
+                    "for ( i ; i LT 5 ; i plus 1 ) a = k min 1:\n" +
+                    "output ( k s plus 5 (a div k)) :\n" +
+                    "end"
+                    );
+                analyzer.Print();
+                SyntacAnalyz syntac = new SyntacAnalyz(analyzer.GetRes()); 
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine();
+                Console.WriteLine(e.Message);
+            }
             Console.ReadLine();
         }
     }

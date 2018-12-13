@@ -7,49 +7,52 @@ using System.Text.RegularExpressions;
 
 namespace Analyzers
 {
-    class SintacAnalyz
+    class SyntacAnalyz
     {
-        string[] lexemes;
+        List<string> lexemes;
         int num = 0; //шаг
         int bracesCount = 0;  //для подсчета {}
         int parantheses = 0;  //для подсчета ()
+        bool fr = false;
 
-        public SintacAnalyz(string lexer)
+        public SyntacAnalyz(List<string> lexer)
         {
-            lexemes = lexer.Split(' ');
-            if (lexemes[lexemes.Length] != "114") throw new Exception("Ожидался end");
+            lexemes = lexer;
+            if (lexemes[lexemes.Count - 1] != "114") throw new Exception("Ожидался end");
+            Parse();
         }
 
-        public void Parse()
+        private void Parse()
         {
-            for (; num < lexemes.Length - 1;)
+            while (num < lexemes.Count - 1)
             {
-                if (Regex.IsMatch(lexemes[num], @"^10|11|12$")) Description();
+                if (Regex.IsMatch(lexemes[num], @"^(10|11|12)$")) Description();
                 else Operator();
             }
             if (bracesCount != 0) throw new Exception("Не хватает фигурных скобок(о боже!)");
+            Console.WriteLine("Все ок");
         }
 
         private void Operator()
         {
-            if (Regex.IsMatch(lexemes[num], @"^3\d|13$")) Assignment();
-            else if (lexemes[num] == "14") If();
-            else if (lexemes[num] == "18") For();
-            else if (lexemes[num] == "19" && lexemes[num + 1] == "110") While();
-            else if (lexemes[num] == "112") Input();
-            else if (lexemes[num] == "113") Output();
-            else if (lexemes[num] == "22")
+            while (lexemes[num] == "22")
             {
                 bracesCount++;
                 num++;
             }
-            else if (lexemes[num] == "23")
+
+            if (Regex.IsMatch(lexemes[num], @"^(3\d|13)$")) Assignment();
+            else if (lexemes[num] == "14") If();
+            else if (lexemes[num] == "18") For();
+            else if (lexemes[num] == "19" && lexemes[num + 1] == "110") While();
+            else if (lexemes[num] == "112" || lexemes[num] == "113") InOutPut();
+            else throw new Exception("Пока не придумал");
+
+            while (lexemes[num] == "23")
             {
                 bracesCount--;
                 num++;
             }
-            else if (lexemes[num] == "225" && lexemes[num + 1] == "225") num += 2;
-            else throw new Exception("Пока не придумал");
         }
 
         //описание типа
@@ -60,7 +63,15 @@ namespace Analyzers
             else throw new Exception("Ошибка в описаниее данных");
             while (true)
             {
-                if (lexemes[num] == "20")
+                if (bracesCount > 0)
+                {
+                    if (lexemes[num] == "26")
+                    {
+                        num++;
+                        break;
+                    }
+                }
+                else if (lexemes[num] == "20")
                 {
                     num++;
                     break;
@@ -78,7 +89,7 @@ namespace Analyzers
             {
                 num += 2;
                 parantheses = 0;
-                Expression(false);
+                Expression(true);
             }
             else throw new Exception("Хьюстон, у нас проблемы");
         }
@@ -94,6 +105,8 @@ namespace Analyzers
             }
             else throw new Exception("А где then?");
 
+            Operator();
+
             while (true)
             {
                 if (lexemes[num] == "17")
@@ -106,7 +119,7 @@ namespace Analyzers
                     num++;
                     Operator();
                 }
-                else throw new Exception("Что-то не так с условием");
+                else throw new Exception("Что-то не так с условием(только вот что?)");
             }
         }
 
@@ -115,7 +128,7 @@ namespace Analyzers
             num++;
             if (lexemes[num] == "24") num++;
             else throw new Exception("Ошибкааа");
-
+            fr = true;
             if (lexemes[num] == "26") num++;
             else
             {
@@ -136,6 +149,7 @@ namespace Analyzers
                 parantheses = 1;
                 Expression(false);
             }
+            fr = false;
         }
 
         private void While()
@@ -154,15 +168,35 @@ namespace Analyzers
             }
         }
 
-        private void Input()
+        private void InOutPut()
         {
+            int count = 0;
+            num++;
+            int i = num;
+            if (lexemes[num] == "24") num++;
+            else throw new Exception("Ожидался '('");
 
+            while (true)
+            {
+                if (lexemes[i][0] == '1') throw new Exception("Ошибка в вводе/выводе");
+                if (Regex.IsMatch(lexemes[i], @"^(3\d|4\d|25)$") && Regex.IsMatch(lexemes[i + 1], @"^(3\d|4\d|24)$"))
+                {
+                    lexemes.Insert(i + 1, "222");
+                    count++;
+                }
+                if (Regex.IsMatch(lexemes[i + 1], @"^(20|26|114)$")) break;
+                i++;
+            }
+
+            for (i = 0; i < count; i++)
+            {
+                parantheses = 0;
+                Expression(true);
+            }
+            parantheses = 1;
+            Expression(true);
         }
 
-        private void Output()
-        {
-
-        }
 
         /*выражение. 24 - "("  25 - ")" 3\d и 4\d соответствуют таблицам идентификаторов и чисел
                      224 - "~" 26 - ";" 20,22,23,211 - ":","{","}"," " соответственно,
@@ -183,7 +217,7 @@ namespace Analyzers
                     else break;
                 }
 
-                if (Regex.IsMatch(lexemes[num], @"^3\d|4\d$"))
+                if (Regex.IsMatch(lexemes[num], @"^(3\d|4\d)$"))
                 {
                     num++;
                 }
@@ -199,20 +233,27 @@ namespace Analyzers
                     else break;
                 }
 
-                if (semicolon && lexemes[num] == "26")
-                {
-                    num++;
-                    break;
-                }
-                else if (!semicolon)
-                {
-                    if (Regex.IsMatch(lexemes[num], @"^1\d|20|22|23|211$") || (lexemes[num][0] == '3' && lexemes[num + 1] == "27"))
+                if (semicolon) { 
+                    if ((bracesCount > 0 || fr) && Regex.IsMatch(lexemes[num], @"^(26)$"))
                     {
+                        num++;
                         break;
                     }
-                }
-                else if (Regex.IsMatch(lexemes[num], "^[212-223]$")) num++;
-                else throw new Exception("Ошибка в выражении");
+                    else if (Regex.IsMatch(lexemes[num], @"^(20||222)$"))
+                    {
+                        num++;
+                        break;
+                    }
+                    }
+                    else if (!semicolon)
+                    {
+                        if (Regex.IsMatch(lexemes[num], @"^(1\d|20|22|23)$") || (lexemes[num][0] == '3' && lexemes[num + 1] == "27"))
+                        {
+                            break;
+                        }
+                    }
+                if (Regex.IsMatch(lexemes[num], "^(28|29|210|211|212|213|214|215|216|217|218|219)$")) num++;
+                else throw new Exception("Ошибка в выражении(святой дух в помощь)");
             }
 
             if (parantheses != 0) throw new Exception("Ошибка в скобочках");

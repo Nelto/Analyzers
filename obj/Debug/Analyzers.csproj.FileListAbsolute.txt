@@ -1,0 +1,7 @@
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\bin\Debug\Analyzers.exe.config
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\bin\Debug\Analyzers.exe
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\bin\Debug\Analyzers.pdb
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\obj\Debug\Analyzers.csprojResolveAssemblyReference.cache
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\obj\Debug\Analyzers.csproj.CoreCompileInputs.cache
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\obj\Debug\Analyzers.exe
+C:\Users\Nelto\source\repos\Analyzers\Analyzers\obj\Debug\Analyzers.pdb
