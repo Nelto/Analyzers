@@ -239,7 +239,7 @@ namespace Analyzers
                         num++;
                         break;
                     }
-                    else if (Regex.IsMatch(lexemes[num], @"^(20||222)$"))
+                    else if (bracesCount <1 && !fr && Regex.IsMatch(lexemes[num], @"^(20||222)$"))
                     {
                         num++;
                         break;
