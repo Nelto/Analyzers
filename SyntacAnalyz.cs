@@ -76,7 +76,7 @@ namespace Analyzers
                     num++;
                     break;
                 }
-                else if (lexemes[num] == "21" && lexemes[num][0] == '3') num += 2;
+                else if (lexemes[num] == "21" && lexemes[num+1][0] == '3') num += 2;
                 else throw new Exception("Ошибка в описаниее данных");
             }
         }

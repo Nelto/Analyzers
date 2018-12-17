@@ -14,10 +14,10 @@ namespace Analyzers
             {
                 LexicalAnalyz analyzer = new LexicalAnalyz(
                     "(*это тест*)\n" +
-                    "int k:\n" +
+                    "int k,s:\n" +
                     "int s:\n" +
                     "int a:\n" +
-                    "k = 5: a = 0: s = 1:\n" +
+                    "k = 1: a= 0: s = 1:\n" +
                     "if k LT 1 then {\n" +
                     "do while k NE s\n" +
                     "a = a plus 2;\n" +
