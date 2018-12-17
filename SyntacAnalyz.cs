@@ -15,10 +15,15 @@ namespace Analyzers
         int parantheses = 0;  //для подсчета ()
         bool fr = false;
 
+        public List<string> GetLexemes()
+        {
+            return lexemes;
+        }
+
         public SyntacAnalyz(List<string> lexer)
         {
             lexemes = lexer;
-            if (lexemes[lexemes.Count - 1] != "114") throw new Exception("Ожидался end");
+            if (lexemes[lexemes.Count - 1] != "114") throw new Exception("Код ошибки 2: " + Exceptions.GetExcep(2));
             Parse();
         }
 
@@ -29,8 +34,8 @@ namespace Analyzers
                 if (Regex.IsMatch(lexemes[num], @"^(10|11|12)$")) Description();
                 else Operator();
             }
-            if (bracesCount != 0) throw new Exception("Не хватает фигурных скобок(о боже!)");
-            Console.WriteLine("Все ок");
+            if (bracesCount != 0) throw new Exception("Код ошибки 3: " + Exceptions.GetExcep(3));
+            Console.WriteLine("Синтаксический анализ успешно пройден");
         }
 
         private void Operator()
@@ -45,8 +50,9 @@ namespace Analyzers
             else if (lexemes[num] == "14") If();
             else if (lexemes[num] == "18") For();
             else if (lexemes[num] == "19" && lexemes[num + 1] == "110") While();
-            else if (lexemes[num] == "112" || lexemes[num] == "113") InOutPut();
-            else throw new Exception("Пока не придумал");
+            else if (lexemes[num] == "112") InPut();
+            else if (lexemes[num] == "113") OutPut();
+            else throw new Exception("Код ошибки 4: " + Exceptions.GetExcep(4));
 
             while (lexemes[num] == "23")
             {
@@ -60,7 +66,7 @@ namespace Analyzers
         {
             num++;
             if (lexemes[num][0] == '3') num++;
-            else throw new Exception("Ошибка в описаниее данных");
+            else throw new Exception("Код ошибки 5: " + Exceptions.GetExcep(5));
             while (true)
             {
                 if (bracesCount > 0)
@@ -77,11 +83,11 @@ namespace Analyzers
                     break;
                 }
                 else if (lexemes[num] == "21" && lexemes[num+1][0] == '3') num += 2;
-                else throw new Exception("Ошибка в описаниее данных");
+                else throw new Exception("Код ошибки 5: " + Exceptions.GetExcep(5));
             }
         }
 
-        //присваивание
+        
         private void Assignment()
         {
             if (lexemes[num] == "13") num++;
@@ -91,7 +97,7 @@ namespace Analyzers
                 parantheses = 0;
                 Expression(true);
             }
-            else throw new Exception("Хьюстон, у нас проблемы");
+            else throw new Exception("Код ошибки 6: " + Exceptions.GetExcep(6));
         }
 
         private void If()
@@ -103,7 +109,7 @@ namespace Analyzers
             {
                 num++;
             }
-            else throw new Exception("А где then?");
+            else throw new Exception("Код ошибки 7: " + Exceptions.GetExcep(7));
 
             Operator();
 
@@ -119,7 +125,7 @@ namespace Analyzers
                     num++;
                     Operator();
                 }
-                else throw new Exception("Что-то не так с условием(только вот что?)");
+                else throw new Exception("Код ошибки 7: " + Exceptions.GetExcep(7));
             }
         }
 
@@ -127,7 +133,7 @@ namespace Analyzers
         {
             num++;
             if (lexemes[num] == "24") num++;
-            else throw new Exception("Ошибкааа");
+            else throw new Exception("Код ошибки 8: " + Exceptions.GetExcep(8));
             fr = true;
             if (lexemes[num] == "26") num++;
             else
@@ -159,6 +165,7 @@ namespace Analyzers
             Expression(false);
             while (true)
             {
+                if (lexemes[num] == "114") throw new Exception("Код ошибки 9: " + Exceptions.GetExcep(9));
                 if (lexemes[num] == "111")
                 {
                     num++;
@@ -168,17 +175,38 @@ namespace Analyzers
             }
         }
 
-        private void InOutPut()
+        private void InPut()
+        {
+            num++;
+            if (lexemes[num] == "24") num++;
+            else throw new Exception("Код ошибки 10: " + Exceptions.GetExcep(10));
+            while (lexemes[num] != "25")
+            {
+                if (lexemes[num][0] != '3') throw new Exception("Код ошибки 10: " + Exceptions.GetExcep(10));
+                num++;
+            }
+            num++;
+
+            if (bracesCount < 1)
+            {
+                if (lexemes[num] == "20") num++;
+                else throw new Exception("Код ошибки 10: " + Exceptions.GetExcep(10));
+            }
+            else if (lexemes[num] == "20") num++;
+            else throw new Exception("Код ошибки 10: " + Exceptions.GetExcep(10));
+        }
+
+        private void OutPut()
         {
             int count = 0;
             num++;
             int i = num;
             if (lexemes[num] == "24") num++;
-            else throw new Exception("Ожидался '('");
+            else throw new Exception("Код ошибки 10:" + Exceptions.GetExcep(10));
 
             while (true)
             {
-                if (lexemes[i][0] == '1') throw new Exception("Ошибка в вводе/выводе");
+                if (lexemes[i][0] == '1') throw new Exception("Код ошибки 10: " + Exceptions.GetExcep(10));
                 if (Regex.IsMatch(lexemes[i], @"^(3\d|4\d|25)$") && Regex.IsMatch(lexemes[i + 1], @"^(3\d|4\d|24)$"))
                 {
                     lexemes.Insert(i + 1, "222");
@@ -217,11 +245,11 @@ namespace Analyzers
                     else break;
                 }
 
-                if (Regex.IsMatch(lexemes[num], @"^(3\d|4\d)$"))
+                if (Regex.IsMatch(lexemes[num], @"^(3\d|4\d|115|116)$"))
                 {
                     num++;
                 }
-                else throw new Exception("Ошибка в выражении");
+                else throw new Exception("Код ошибки 11: " + Exceptions.GetExcep(11));
 
                 while (true)
                 {
@@ -253,10 +281,10 @@ namespace Analyzers
                         }
                     }
                 if (Regex.IsMatch(lexemes[num], "^(28|29|210|211|212|213|214|215|216|217|218|219)$")) num++;
-                else throw new Exception("Ошибка в выражении(святой дух в помощь)");
+                else throw new Exception("Код ошибки 11: " + Exceptions.GetExcep(11));
             }
 
-            if (parantheses != 0) throw new Exception("Ошибка в скобочках");
+            if (parantheses != 0) throw new Exception("Код ошибки 11: " + Exceptions.GetExcep(11));
         }
     }
 }

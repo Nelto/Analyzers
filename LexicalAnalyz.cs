@@ -10,8 +10,8 @@ namespace Analyzers
 {
     class LexicalAnalyz
     {
-        private string[] tw = { "int", "float", "bool", "let", "if", "then", "else", "end_else", "for", "do", "while", "loop", "input", "output", "end" };
-        private string[] tl = { ":", ",", "{", "}", "(", ")", ";", "=", "NE", "EQ", "LT", "LE", "GT", "GE", "plus", "min", "mult", "div", "and", "or", "~","*", " " };
+        private string[] tw = { "int", "float", "bool", "let", "if", "then", "else", "end_else", "for", "do", "while", "loop", "input", "output", "end", "true", "false" };
+        private string[] tl = { ":", ",", "{", "}", "(", ")", ";", "=", "NE", "EQ", "LT", "LE", "GT", "GE", "plus", "min", "mult", "div", "and", "or", "~","*" ," " };
         private List<string> ti = new List<string>();
         private List<string> tn = new List<string>();
         private List<string> res = new List<string>();
@@ -46,7 +46,8 @@ namespace Analyzers
                     }
                 }
             }
-            if (iscomment) throw new Exception("А комментарий за вас Пушкин закрывать будет?");
+            if (iscomment) throw new Exception("Код ошибки 0: " + Exceptions.GetExcep(0));
+            Console.WriteLine("Лексический анализ успешно пройден");
         }
 
         public List<string> GetRes()
@@ -62,7 +63,7 @@ namespace Analyzers
         private void Format(ref string program)
         {
             program = Regex.Replace(program, @"[*|(|)]|:|,|{ | } |~|;|=|^(int|floor|bool|let|if|then|else|end_else|" + "" +
-                "for|do|while|loop|input|output|end|NE|EQ|LT|LE|GT|GE|plus|min|or|mult|div|and)$"," $& ");
+                "for|do|while|loop|input|output|end|NE|EQ|LT|LE|GT|GE|plus|min|or|mult|div|and|true|false)$"," $& ");
 
             while (program.Contains("  "))
                 program = program.Replace("  ", " ");
@@ -82,7 +83,7 @@ namespace Analyzers
                     res.Add("3" + (ti.Count - 1));
                 }
             }
-            else if (Regex.IsMatch(lex, @"^([0-1]+[Bb]|[0-7]+[Oo]$|[0-9]+[Dd]?|[0-9]+[A-Fa-f]*[Hh]|[0-9]*[.][0-9]+([Ee][+-]?[0-9]+)?)$"))
+            else if (Regex.IsMatch(lex, @"^([0-1]+[Bb]|[0-7]+[Oo]$|[0-9]+[Dd]?|[0-9]+[A-Fa-f]*[Hh]|[0-9]*[.][0-9]+([Ee][+-]?[0-9]+)?|[0-9]+[Ee][+-]?[0-9]+)$"))
             {
                 if (tn.Contains(lex)) res.Add("4" + tn.IndexOf(lex));
                 else
@@ -92,7 +93,7 @@ namespace Analyzers
                 }
             }
             else if (tl.Contains(lex)) res.Add("2" + Array.IndexOf(tl, lex));
-            else throw new Exception("Данная лексема не содержится в граматике");
+            else throw new Exception("Код ошибки 1: " + Exceptions.GetExcep(1));
         }
 
         public void Print()
@@ -106,7 +107,7 @@ namespace Analyzers
             Console.WriteLine("\nTN");
             for (int i = 0; i < tn.Count; i++) Console.WriteLine(i + " " + tn[i]);
             Console.WriteLine("\nAnalyze result");
-            for (int i = 0; i < res.Count; i++) Console.Write(res[i] + " ");
+            foreach(string s in res) Console.Write(s + " ");
             Console.WriteLine();
         }
     }

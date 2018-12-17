@@ -14,24 +14,29 @@ namespace Analyzers
             {
                 LexicalAnalyz analyzer = new LexicalAnalyz(
                     "(*это тест*)\n" +
-                    "int k,s:\n" +
+                    "bool a:" +
+                    "a = true:\n"+
+                    "int i:"+
+                    "float t:\n"+
+                    "t = 52e+2:\n"+
                     "int s:\n" +
-                    "int a:\n" +
-                    "k = 1: a= 0: s = 1:\n" +
-                    "if k LT 1 then {\n" +
-                    "do while k NE s\n" +
-                    "a = a plus 2;\n" +
+                    "input ( s ):\n"+
+                    "s = 1001B:\n" +
+                    "if a or t NE s and t EQ 1e5 then {\n" +
+                    "do while t NE s\n" +
+                    "t = t plus 2;\n" +
                     "loop\n" +
                     "(*и это тест*)\n" +
                     "}\n" +
                     "end_else " +
-                    "for ( i ; i LT 5 ; i plus 1 ) a = k min 1:\n" +
-                    "output ( k s plus 5 (a div k)) :\n" +
+                    "for ( i ; i LT 5 ; i plus 1 ) s = s min 1:\n" +
+                    "output ( s plus 5 (t div s)) :\n" +
                     "end" +
                     "(*это последний тест*)"
                     );
                 analyzer.Print();
-                SyntacAnalyz syntac = new SyntacAnalyz(analyzer.GetRes()); 
+                SyntacAnalyz syntac = new SyntacAnalyz(analyzer.GetRes());
+                SemanticAnalyz semantic = new SemanticAnalyz(analyzer.GetTN(), syntac.GetLexemes());
             }
             catch(Exception e)
             {
